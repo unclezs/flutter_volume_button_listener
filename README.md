@@ -5,16 +5,30 @@
 ## 功能特性
 
 - 🔍 监听音量增加和减少按键事件
-- 🎛️ 控制是否显示系统音量UI
+- 🎛️ 完全控制音量UI显示（Android完全支持，iOS使用自定义控制）
 - 📱 支持 Android 和 iOS 平台
 - ⚡ 实时事件流处理
 - 🛡️ 安全的资源管理
 - 🔢 提供按键代码和按键名称信息
+- 🚫 iOS完全隐藏系统音量UI
 
 ## 平台支持
 
-- **Android**: 通过按键事件监听实现
-- **iOS**: 通过 AVAudioSession 监听音量变化
+- **Android**: 通过按键事件监听实现，完全支持音量UI控制
+- **iOS**: 通过音频会话监听音量变化，使用自定义音量控制完全隐藏系统UI
+
+## 平台差异说明
+
+### Android
+- ✅ 完全支持音量按键监听
+- ✅ 可以完全控制音量UI的显示/隐藏
+- ✅ 支持消费音量按键事件
+
+### iOS
+- ✅ 支持音量按键监听
+- ✅ **完全隐藏系统音量UI**（使用自定义音量控制）
+- ✅ 支持音量恢复功能
+- ✅ 使用ambient音频会话避免系统UI干扰
 
 ## 安装
 
@@ -66,7 +80,7 @@ VolumeButtonListener.onVolumeButtonPressed.listen((event) {
 ### 3. 控制音量UI显示
 
 ```dart
-// 隐藏音量UI
+// 完全隐藏音量UI（Android和iOS都支持）
 await VolumeButtonListener.setShowVolumeUI(false);
 
 // 显示音量UI
@@ -127,15 +141,31 @@ class _VolumeButtonDemoState extends State<VolumeButtonDemo> {
     });
   }
 
+  Future<void> _toggleVolumeUI() async {
+    await VolumeButtonListener.setShowVolumeUI(!_showVolumeUI);
+    setState(() {
+      _showVolumeUI = !_showVolumeUI;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('音量按键监听器')),
       body: Column(
         children: [
-          ElevatedButton(
-            onPressed: _toggleListening,
-            child: Text(_isListening ? '停止监听' : '开始监听'),
+          Row(
+            children: [
+              ElevatedButton(
+                onPressed: _toggleListening,
+                child: Text(_isListening ? '停止监听' : '开始监听'),
+              ),
+              SizedBox(width: 16),
+              ElevatedButton(
+                onPressed: _toggleVolumeUI,
+                child: Text(_showVolumeUI ? '隐藏音量UI' : '显示音量UI'),
+              ),
+            ],
           ),
           Expanded(
             child: ListView.builder(
@@ -203,17 +233,35 @@ class _VolumeButtonDemoState extends State<VolumeButtonDemo> {
 ## 注意事项
 
 1. **Android 权限**: 确保应用有适当的权限来监听按键事件
-2. **音量UI控制**: 当 `setShowVolumeUI(false)` 时，音量按键事件会被消费，不会显示系统音量UI
+2. **音量UI控制**: 
+   - Android: 当 `setShowVolumeUI(false)` 时，音量按键事件会被消费，不会显示系统音量UI
+   - iOS: 使用自定义音量控制完全隐藏系统音量UI，音量变化后立即恢复
 3. **按键代码**: 
    - 24: 音量增加按键 (KEYCODE_VOLUME_UP)
    - 25: 音量减少按键 (KEYCODE_VOLUME_DOWN)
+4. **iOS实现**: 使用ambient音频会话和自定义音量控制器，完全避免系统UI干扰
+
+## 技术实现
+
+### iOS自定义音量控制
+- 使用 `MPVolumeView` 创建隐藏的音量控制器
+- 通过 `AVAudioSession.ambient` 类别避免系统UI
+- 实时监听音量变化并立即恢复
+- 完全自定义的音量控制逻辑
+
+### Android按键监听
+- 直接监听系统按键事件
+- 完全控制音量UI显示
+- 支持事件消费
 
 ## 更新日志
 
 ### v1.0.0
 - 初始版本，支持基本的音量按键监听
-- 支持控制音量UI显示
+- 支持控制音量UI显示（Android完全支持，iOS使用自定义控制）
 - 提供按键代码和按键名称信息
+- 支持Android和iOS平台
+- **iOS完全隐藏系统音量UI**
 
 ## 贡献
 
