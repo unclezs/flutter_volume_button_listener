@@ -21,5 +21,3 @@ flutter:
       android:
         package: com.unclezs.volume_button_listener
         pluginClass: VolumeButtonListenerPlugin
-      ios:
-        pluginClass: VolumeButtonListenerPlugin 
