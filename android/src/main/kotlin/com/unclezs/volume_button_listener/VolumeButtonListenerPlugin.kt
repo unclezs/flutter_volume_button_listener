@@ -15,7 +15,7 @@ class VolumeButtonListenerPlugin : FlutterPlugin, MethodCallHandler, ActivityAwa
     private lateinit var channel: MethodChannel
     private var activity: Activity? = null
     private var isListening = false
-    private var showVolumeUI = true
+    private var showVolumeUI = false
 
     companion object {
         private const val TAG = "VolumeButtonListener"
